@@ -13,5 +13,6 @@ namespace _1911065165_HoChiCong_BigSchool.Controllers
         {
             return View();
         }
+        //comit lan1
     }
 }
