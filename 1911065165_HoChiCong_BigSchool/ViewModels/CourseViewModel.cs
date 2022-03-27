@@ -9,7 +9,7 @@ namespace _1911065165_HoChiCong_BigSchool.ViewModels
 {
     public class CourseViewModel
     {
-        [Required] 
+        [Required]
         public string Place { get; set; }
         [Required]
         [FutureDate]
@@ -24,7 +24,5 @@ namespace _1911065165_HoChiCong_BigSchool.ViewModels
         {
             return DateTime.Parse(string.Format("{0} {1}", Date, Time));
         }
-
-
     }
 }
