@@ -1,4 +1,5 @@
-﻿using _1911065165_HoChiCong_BigSchool.Models;
+﻿using _1911065165_HoChiCong_BigSchool.DTOs;
+using _1911065165_HoChiCong_BigSchool.Models;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,15 +19,19 @@ namespace _1911065165_HoChiCong_BigSchool.Controllers
             _dbContext = new ApplicationDbContext();
         }
         [HttpPost]
-        public IHttpActionResult Attend([FromBody] int courseId)
+        public IHttpActionResult Attend(AttendanceDto attdanceDto)
         {
+            var userId = User.Identity.GetUserId();
+            if (_dbContext.Attendances.Any(a => a.AttendeeId == userId && a.CourseId == attdanceDto.CourseId))
+                return BadRequest("The Attendance Alrealy exists !");
             var attendance = new Attendance
             {
-                CourseId = courseId,
-                AttendeeId = User.Identity.GetUserId()
+                CourseId = attdanceDto.CourseId,
+                AttendeeId = userId
             };
             _dbContext.Attendances.Add(attendance);
             _dbContext.SaveChanges();
+
             return Ok();
         }
     }
