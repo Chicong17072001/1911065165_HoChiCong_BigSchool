@@ -7,5 +7,6 @@ namespace _1911065165_HoChiCong_BigSchool.DTOs
 {
     public class AttendanceDto
     {
+        public int CourseId { get; set; }
     }
 }
