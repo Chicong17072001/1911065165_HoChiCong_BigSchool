@@ -1,32 +1,63 @@
-﻿@model IEnumerable<_1911065165_HoChiCong_BigSchool.Models.Course>
+﻿@model _1911065165_HoChiCong_BigSchool.ViewModels.CoursesViewModel
+@using Microsoft.AspNet.Identity;
+@using _1911065165_HoChiCong_BigSchool.Models;
 @{
     ViewBag.Title = "Home Page";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link href="~/Content/Site.css" rel="stylesheet" />
 <link href="~/Content/bootstrap.css" rel="stylesheet" />
-<ul class="Course">
-    @foreach (var course in Model)
+<ul class="course">
+    @foreach (var course in Model.UpcommingCourses)
     {
-        <li>
-            <div class="date">
-                <div class="month">
-                    @course.DateTime.ToString("MM")
-                </div>
-                <div class="day">
-                    @course.DateTime.ToString("dd")
-                </div>
+    <li>
+        <div class="date">
+            <div class="month">
+                @course.DateTime.ToString("dd-MM")
+                <small> @course.DateTime.ToString("yyyy")</small>
             </div>
-            <div class="details">
-                <span class="lecturer">
-                    @course.Lecturer.Name
-                </span>
-                <span class="category">
-                    @course.Category.Name
-                </span>
+            <div class="day">
+                <small>@course.DateTime.ToString("HH:mm")</small>
+            </div>
+        </div>
+        <div class="details">
+            <span class="lecturer">
+                @course.Lecturer.Name
+                @if (Model.ShowAction)
+                {
+                    <button class="btn btn-info btn-sm js-toggle-follow" data-user-id="@course.LecturerId">
+                        Following
+                    </button>
+                }
+            </span>
+            <span class="category">
+                @course.Category.Name
+            </span>
+            @if (Model.ShowAction)
+            {
                 <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance"> Going?</button>
+            }
+        </div>
+        <span class="category">
+            @course.Category.Name
+        </span>
+        @if (Model.ShowAction)
+        {
+            var useID = User.Identity.GetUserId();
+            ApplicationDbContext _dbContext = new ApplicationDbContext();
+            bool isGoing = _dbContext.Attendances.Any(a => a.CourseId == course.Id && a.AttendeeId == useID);
+            <div>
+                @if (!isGoing)
+                {
+                    <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance">Going?</button>
+                }
+                else
+                {
+                    <span class="text-danger"> Đã tham gia &#9989;</span>
+                }
             </div>
-        </li>
+        }
+    </li>
     }
 </ul>
 @section scripts
@@ -46,6 +77,20 @@
                         alert("Something faied !");
                     });
             });
+            $(".js-toggle-follow").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/followings", { followeeId: button.attr("data-user-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("following");
+                    })
+                    .fail(function () {
+                        alert("Something failed !");
+                    });
+            });
+        });
     </script>
 }
 
